@@ -1,0 +1,25 @@
+Velanova roadmap patch - phase 1 (Supabase auth foundation)
+
+Updated paths:
+- package.json
+- .env.example
+- SUPABASE_SETUP.md
+- supabase/001_profiles.sql
+- src/App.jsx
+- src/components/Navbar.jsx
+- src/context/UserContext.jsx
+- src/lib/supabaseClient.js
+- src/pages/Login.jsx
+- src/pages/Profile.jsx
+
+What changed:
+- Added Supabase auth bootstrap with per-tab session storage
+- Added local demo fallback when Supabase keys are not present
+- Added admin-only route protection
+- Updated login/register flow to support async auth
+- Updated profile page to support async profile updates
+
+Next recommended patch:
+- products + images + variants tables
+- ProductContext migration
+- admin CRUD against Supabase

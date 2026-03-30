@@ -1,0 +1,383 @@
+.admin-shell {
+  display: grid;
+  gap: 28px;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.admin-title { text-align: left; }
+.admin-subcopy { color: #666; max-width: 680px; }
+
+.admin-stats-inline {
+  display: flex;
+  gap: 14px;
+}
+
+.admin-stats-inline div {
+  min-width: 120px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: #faf9f7;
+}
+
+.admin-stats-inline strong {
+  display: block;
+  font-size: 1.4rem;
+  color: var(--color-text);
+}
+
+.admin-stats-inline span {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.admin-tabbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-tab {
+  padding: 14px 20px;
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #666;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-tab.active,
+.admin-tab:hover {
+  color: var(--color-text);
+  border-color: rgba(154,116,62,0.35);
+  background: #faf9f7;
+}
+
+.admin-alert {
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-weight: 600;
+}
+
+.admin-alert.success {
+  background: #edf8ef;
+  border: 1px solid #cfe6d4;
+  color: #2d7a2d;
+}
+
+.admin-actions-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-searchbox {
+  margin-left: auto;
+  min-width: 280px;
+  max-width: 360px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: white;
+}
+
+.admin-searchbox input {
+  width: 100%;
+  border: none;
+  padding: 14px 0;
+  font-size: 0.95rem;
+}
+
+.admin-searchbox input:focus {
+  outline: none;
+}
+
+.admin-products-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-products-head span {
+  color: #666;
+  font-size: 0.92rem;
+}
+
+.products-grid-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 20px;
+}
+
+.admin-card,
+.admin-form-card,
+.admin-empty-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.admin-card:hover {
+  border-color: rgba(154,116,62,0.32);
+}
+
+.admin-card-image {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.admin-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-new,
+.badge-sale {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.badge-new { background: var(--color-gold); }
+.badge-sale { background: #e53935; }
+
+.admin-card-content {
+  padding: 18px;
+}
+
+.admin-card-content h4 {
+  margin-bottom: 8px;
+  font-size: 1.08rem;
+}
+
+.admin-card-meta {
+  color: var(--color-dark-gray);
+  font-size: 0.92rem;
+  margin-bottom: 10px;
+}
+
+.admin-card-meta .sale {
+  color: #d54f4f;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.admin-card-meta .old {
+  color: #999;
+  text-decoration: line-through;
+}
+
+.admin-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  border: 1px solid transparent;
+}
+
+.admin-stock-badge.in {
+  background: #edf8ef;
+  color: #1f7a35;
+  border-color: #cae9d1;
+}
+
+.admin-stock-badge.low {
+  background: #fff6e9;
+  color: #9a5a00;
+  border-color: #f3d7aa;
+}
+
+.admin-stock-badge.out {
+  background: #fff1f1;
+  color: #b42318;
+  border-color: #f2d2d2;
+}
+
+.admin-card-description {
+  color: #666;
+  font-size: 0.92rem;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.admin-card-actions,
+.delete-confirm-actions,
+.admin-form-actions,
+.admin-checkbox-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  background: white;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-edit {
+  color: var(--color-gold);
+  border-color: rgba(154,116,62,0.24);
+}
+
+.btn-delete {
+  color: #d54f4f;
+  border-color: rgba(229,57,53,0.24);
+}
+
+.delete-confirm {
+  margin-top: 14px;
+  padding: 14px;
+  background: #fff8f7;
+  border: 1px solid #f3dad8;
+  border-radius: 18px;
+}
+
+.delete-confirm p { margin-bottom: 10px; }
+
+.btn-confirm {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.btn-confirm-yes {
+  background: #f44336;
+  color: white;
+}
+
+.btn-confirm-no {
+  background: white;
+  color: #333;
+  border: 1px solid var(--color-border);
+}
+
+.admin-empty-card {
+  padding: 36px 24px;
+  text-align: center;
+}
+
+.admin-form-card {
+  padding: 22px;
+}
+
+.admin-form-head {
+  margin-bottom: 18px;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: 20px;
+}
+
+.admin-form-block {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-upload-area {
+  border: 1px dashed #d8cfbf;
+  border-radius: 24px;
+  overflow: hidden;
+  min-height: 360px;
+  background: #faf9f7;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+
+.admin-preview-image {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+}
+
+.admin-upload-placeholder {
+  text-align: center;
+  color: #7b756d;
+  display: grid;
+  gap: 6px;
+}
+
+.admin-upload-placeholder span {
+  font-size: 0.88rem;
+}
+
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #faf9f7;
+}
+
+@media (max-width: 1024px) {
+  .admin-topbar,
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-grid-admin {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-actions-row,
+  .admin-card-actions,
+  .admin-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-searchbox {
+    margin-left: 0;
+    max-width: none;
+  }
+}

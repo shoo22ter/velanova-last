@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowRight, Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { Trash2, Minus, Plus } from 'lucide-react';
-
 import { PageTransition, ScrollReveal } from '../components/ScrollReveal';
+import './Cart.css';
 
 const Cart = () => {
   const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
@@ -11,12 +11,18 @@ const Cart = () => {
   if (cart.length === 0) {
     return (
       <PageTransition>
-        <div className="container section-padding text-center" style={{ paddingTop: '150px', minHeight: '70vh' }}>
-          <ScrollReveal>
-            <h2 style={{ marginBottom: '20px' }}>Your Cart is Empty</h2>
-            <p style={{ color: 'var(--color-dark-gray)', marginBottom: '40px' }}>Looks like you haven't added anything to your cart yet.</p>
-            <Link to="/shop" className="btn btn-primary">Start Shopping</Link>
-          </ScrollReveal>
+        <div className="cart-page">
+          <div className="container cart-shell">
+            <div className="cart-empty">
+              <div className="cart-empty-icon">
+                <ShoppingBag size={34} />
+              </div>
+              <p className="cart-kicker">Your bag is waiting</p>
+              <h2>Your cart is empty</h2>
+              <p>Add your favorite products to continue with checkout.</p>
+              <Link to="/shop" className="btn btn-primary">Start Shopping</Link>
+            </div>
+          </div>
         </div>
       </PageTransition>
     );
@@ -24,55 +30,165 @@ const Cart = () => {
 
   return (
     <PageTransition>
-      <div className="container section-padding" style={{ paddingTop: '120px', minHeight: '80vh' }}>
-        <ScrollReveal>
-          <h1 className="section-title">Your Cart</h1>
-        </ScrollReveal>
-        <div className="grid" style={{ gridTemplateColumns: '2fr 1fr', gap: '40px' }}>
-          <div className="cart-items">
-            {cart.map((item, idx) => (
-              <ScrollReveal key={item.id} delay={idx * 0.1}>
-                <div className="cart-item" style={{ display: 'flex', gap: '20px', borderBottom: '1px solid var(--color-border)', paddingBottom: '20px', marginBottom: '20px' }}>
-                  <img src={item.image} alt={item.name} style={{ width: '100px', height: '120px', objectFit: 'cover' }} />
-                  <div className="item-details" style={{ flex: 1 }}>
-                    <Link to={`/product/${item.id}`}><h3 style={{ fontSize: '1.2rem', marginBottom: '5px' }}>{item.name}</h3></Link>
-                    <p className="text-gold" style={{ marginBottom: '15px' }}>${item.price.toFixed(2)}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                      <div className="quantity-selector" style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--color-border)', width: 'fit-content' }}>
-                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} style={{ padding: '8px 12px' }}><Minus size={14}/></button>
-                        <span style={{ padding: '0 15px', fontSize: '0.9rem' }}>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={{ padding: '8px 12px' }}><Plus size={14}/></button>
-                      </div>
-                      <button onClick={() => removeFromCart(item.id)} style={{ color: 'red', background: 'none' }}><Trash2 size={18} /></button>
+      <div className="cart-page">
+        <section className="section-padding">
+          <div className="container cart-shell">
+            <ScrollReveal>
+              <div className="cart-stage">
+                <div className="cart-header">
+                  <div>
+                    <p className="cart-kicker">Cart</p>
+                    <h1>Your selected products</h1>
+                    <p>Review your selections, update quantities with ease, and move to checkout with a smoother premium flow.</p>
+                  </div>
+
+                  <div className="cart-payment-hint">
+                    <ShieldCheck size={22} />
+                    <div>
+                      <strong>Trusted checkout</strong>
+                      <span>Simple payment options and fast local delivery.</span>
                     </div>
                   </div>
-                  <div className="item-total text-right">
-                    <p style={{ fontWeight: '600' }}>${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+
+                <div className="cart-feedback-strip">
+                  <div className="cart-feedback-card">
+                    <Sparkles size={18} />
+                    <div>
+                      <strong>Polished cart experience</strong>
+                      <span>Faster controls, clearer totals, and an easier path to purchase.</span>
+                    </div>
+                  </div>
+                  <div className="cart-feedback-card">
+                    <Truck size={18} />
+                    <div>
+                      <strong>Delivery with care</strong>
+                      <span>Your order is prepared for fast local delivery with premium presentation.</span>
+                    </div>
                   </div>
                 </div>
-              </ScrollReveal>
-            ))}
+
+                <div className="cart-layout-grid">
+                  <div className="cart-items-column">
+                    {cart.map((item, idx) => (
+                      <ScrollReveal key={item.cartKey || item.id} delay={idx * 0.04}>
+                        <div className="cart-luxury-item">
+                          <Link to={`/product/${item.id}`} className="cart-item-image-wrap">
+                            <img src={item.image} alt={item.name} className="cart-item-image" />
+                          </Link>
+
+                          <div className="cart-item-copy">
+                            <p className="cart-item-category">{item.category}</p>
+                            <Link to={`/product/${item.id}`}>
+                              <h3>{item.name}</h3>
+                            </Link>
+
+                            {item.selectedSize && (
+                              <div className="cart-size-badge">
+                                Selected size: <strong>{item.selectedSize}</strong>
+                              </div>
+                            )}
+
+                            <p className="cart-item-description">
+                              {item.description ? item.description.slice(0, 120) : 'Premium product selected for your order.'}
+                              {item.description && item.description.length > 120 ? '...' : ''}
+                            </p>
+
+                            <div className="cart-item-controls">
+                              <div className="cart-quantity-pill">
+                                <button
+                                  onClick={() => updateQuantity(item.cartKey || item.id, item.quantity - 1)}
+                                  aria-label="decrease quantity"
+                                >
+                                  <Minus size={16} />
+                                </button>
+                                <span>{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.cartKey || item.id, item.quantity + 1)}
+                                  aria-label="increase quantity"
+                                >
+                                  <Plus size={16} />
+                                </button>
+                              </div>
+
+                              <button
+                                onClick={() => removeFromCart(item.cartKey || item.id)}
+                                className="cart-remove-btn"
+                                aria-label="remove product"
+                              >
+                                <Trash2 size={16} />
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="cart-item-pricing">
+                            <span className="cart-item-unit-price">${Number(item.price || 0).toFixed(2)} each</span>
+                            <strong>${(Number(item.price || 0) * Number(item.quantity || 0)).toFixed(2)}</strong>
+                          </div>
+                        </div>
+                      </ScrollReveal>
+                    ))}
+                  </div>
+
+                  <ScrollReveal delay={0.08}>
+                    <aside className="cart-summary-panel">
+                      <p className="cart-summary-kicker">Order summary</p>
+                      <h3>Ready for checkout</h3>
+
+                      <div className="cart-summary-rows">
+                        <div className="cart-summary-row">
+                          <span>Items</span>
+                          <strong>{cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0)}</strong>
+                        </div>
+                        <div className="cart-summary-row">
+                          <span>Subtotal</span>
+                          <strong>${cartTotal.toFixed(2)}</strong>
+                        </div>
+                        <div className="cart-summary-row">
+                          <span>Shipping</span>
+                          <strong>Calculated at checkout</strong>
+                        </div>
+                        <div className="cart-summary-row total">
+                          <span>Total</span>
+                          <strong>${cartTotal.toFixed(2)}</strong>
+                        </div>
+                      </div>
+
+                      <div className="cart-summary-note">
+                        <p>Available payment methods</p>
+                        <div className="cart-method-list">
+                          <div className="cart-method-card">
+                            <Truck size={18} />
+                            <div>
+                              <strong>Cash on Delivery</strong>
+                              <span>Fast local delivery with payment on arrival.</span>
+                            </div>
+                          </div>
+                          <div className="cart-method-card">
+                            <ShieldCheck size={18} />
+                            <div>
+                              <strong>Wish Money</strong>
+                              <span>Simple digital payment with the same delivery flow.</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Link to="/checkout" className="btn btn-primary btn-full">
+                        Proceed to Checkout <ArrowRight size={16} />
+                      </Link>
+                      <Link to="/shop" className="btn btn-outline btn-full cart-continue-link">Continue Shopping</Link>
+                    </aside>
+                  </ScrollReveal>
+                </div>
+              </div>
+            </ScrollReveal>
           </div>
-          
-          <ScrollReveal delay={0.2} className="cart-summary" style={{ backgroundColor: 'var(--color-light-gray)', padding: '30px', height: 'fit-content' }}>
-            <h3 style={{ marginBottom: '20px', borderBottom: '1px solid var(--color-border)', paddingBottom: '10px' }}>Order Summary</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-              <span>Subtotal</span>
-              <span>${cartTotal.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid var(--color-border)', paddingBottom: '20px' }}>
-              <span>Shipping</span>
-              <span>Calculated at checkout</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', fontWeight: 'bold', fontSize: '1.2rem' }}>
-              <span>Total</span>
-              <span>${cartTotal.toFixed(2)}</span>
-            </div>
-            <Link to="/checkout" className="btn btn-full" style={{ width: '100%', backgroundColor: 'var(--color-black)', color: 'var(--color-white)' }}>Proceed to Checkout</Link>
-          </ScrollReveal>
-        </div>
+        </section>
       </div>
     </PageTransition>
   );
 };
+
 export default Cart;

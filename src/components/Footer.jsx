@@ -12,49 +12,60 @@ const Twitter = ({ size = 20 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
 );
 
+import { motion } from 'framer-motion';
+import { ScrollReveal } from './ScrollReveal';
+
 const Footer = () => {
   return (
     <footer className="footer bg-black">
       <div className="container">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <h2 className="brand-logo text-gold">VELANOVA</h2>
-            <p>Premium body and hair care for the modern, radiant you. Experience the luxury of nature in every drop.</p>
-            <div className="social-links">
-              <a href="#"><Instagram size={20} /></a>
-              <a href="#"><Facebook size={20} /></a>
-              <a href="#"><Twitter size={20} /></a>
+        <ScrollReveal>
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <h2 className="brand-logo text-gold">VELANOVA</h2>
+              <p>Premium body and hair care for the modern, radiant you. Experience the luxury of nature in every drop.</p>
+              <div className="social-links">
+                <motion.a href="#" whileHover={{ y: -5, scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}><Instagram size={20} /></motion.a>
+                <motion.a href="#" whileHover={{ y: -5, scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}><Facebook size={20} /></motion.a>
+                <motion.a href="#" whileHover={{ y: -5, scale: 1.1 }} transition={{ type: "spring", stiffness: 300 }}><Twitter size={20} /></motion.a>
+              </div>
+            </div>
+            
+            <div className="footer-links">
+              <h3>Shop</h3>
+              <Link to="/shop">All Products</Link>
+              <Link to="/shop">Skin Care</Link>
+              <Link to="/shop">Body Care</Link>
+              <Link to="/shop">Hair Care</Link>
+            </div>
+            
+            <div className="footer-links">
+              <h3>Company</h3>
+              <Link to="/about">About Us</Link>
+              <Link to="/contact">Contact</Link>
+              <Link to="/terms">Terms of Service</Link>
+            </div>
+            
+            <div className="footer-newsletter">
+              <h3>Newsletter</h3>
+              <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+              <form className="newsletter-form">
+                <div className="input-group">
+                  <input type="email" placeholder="Enter your email address" className="form-control" />
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} type="button" className="btn btn-gold">
+                    Subscribe
+                  </motion.button>
+                </div>
+              </form>
             </div>
           </div>
-          
-          <div className="footer-links">
-            <h3>Shop</h3>
-            <Link to="/shop">All Products</Link>
-            <Link to="/shop">Skin Care</Link>
-            <Link to="/shop">Body Care</Link>
-            <Link to="/shop">Hair Care</Link>
-          </div>
-          
-          <div className="footer-links">
-            <h3>Company</h3>
-            <Link to="/">About Us</Link>
-            <Link to="/">Contact</Link>
-            <Link to="/">Terms of Service</Link>
-          </div>
-          
-          <div className="footer-newsletter">
-            <h3>Newsletter</h3>
-            <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
-            <form className="newsletter-form">
-              <input type="email" placeholder="Enter your email address" className="form-control" />
-              <button type="button" className="btn btn-gold">Subscribe</button>
-            </form>
-          </div>
-        </div>
+        </ScrollReveal>
         
-        <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} VELANOVA. All rights reserved.</p>
-        </div>
+        <ScrollReveal delay={0.2}>
+          <div className="footer-bottom">
+            <p>&copy; {new Date().getFullYear()} VELANOVA. All rights reserved.</p>
+          </div>
+        </ScrollReveal>
       </div>
     </footer>
   );

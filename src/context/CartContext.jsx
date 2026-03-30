@@ -1,44 +1,110 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useEffect, useMemo, useState, useContext } from 'react';
 
 const CartContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => useContext(CartContext);
 
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+const makeCartKey = (productId, selectedSize) => `${productId}__${selectedSize || 'default'}`;
 
-  const addToCart = (product, quantity = 1) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+export const CartProvider = ({ children }) => {
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem('velanova-cart');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem('velanova-cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = window.setTimeout(() => setToast(null), 2400);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ id: Date.now(), message, type });
+  };
+
+  const clearToast = () => setToast(null);
+
+  const addToCart = (product, quantity = 1, selectedSize = null) => {
+    const cartKey = makeCartKey(product.id, selectedSize);
+    let wasExisting = false;
+
+    setCart((prev) => {
+      const existing = prev.find((item) => item.cartKey === cartKey);
       if (existing) {
-        return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+        wasExisting = true;
+        return prev.map((item) =>
+          item.cartKey === cartKey ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prev, { ...product, quantity }];
+
+      return [
+        ...prev,
+        {
+          ...product,
+          cartKey,
+          selectedSize,
+          quantity,
+        },
+      ];
     });
+
+    showToast(
+      wasExisting
+        ? `${product.name} quantity updated in your cart.`
+        : `${product.name} added to your cart.`,
+    );
   };
 
-  const removeFromCart = (productId) => {
-    setCart(prev => prev.filter(item => item.id !== productId));
+  const removeFromCart = (cartKey) => {
+    let removedItem = null;
+    setCart((prev) => {
+      removedItem = prev.find((item) => item.cartKey === cartKey);
+      return prev.filter((item) => item.cartKey !== cartKey);
+    });
+
+    if (removedItem) showToast(`${removedItem.name} removed from your cart.`, 'info');
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (cartKey, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartKey);
       return;
     }
-    setCart(prev => prev.map(item => 
-      item.id === productId ? { ...item, quantity } : item
-    ));
+    setCart((prev) => prev.map((item) => (item.cartKey === cartKey ? { ...item, quantity } : item)));
   };
 
-  const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
+  const clearCart = () => {
+    setCart([]);
+    showToast('Your cart has been cleared.', 'info');
+  };
+
+  const cartTotal = useMemo(
+    () => cart.reduce((total, item) => total + Number(item.price || 0) * Number(item.quantity || 0), 0),
+    [cart]
+  );
+
+  const cartCount = useMemo(() => cart.reduce((count, item) => count + item.quantity, 0), [cart]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, cartTotal, cartCount }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        cartTotal,
+        cartCount,
+        clearCart,
+        toast,
+        clearToast,
+        showToast,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
