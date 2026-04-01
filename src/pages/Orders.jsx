@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Download, ShoppingCart } from 'lucide-react';
 import { useOrders } from '../context/OrdersContext';
+import { useUser } from '../context/UserContext';
 import { PageTransition, ScrollReveal } from '../components/ScrollReveal';
 import './Orders.css';
 
 const Orders = () => {
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, loading, error } = useOrders();
+  const { isAdmin } = useUser();
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [sortBy, setSortBy] = useState('date-desc');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [statusError, setStatusError] = useState('');
 
   const filteredOrders = filterStatus === 'all'
     ? orders
@@ -46,6 +49,15 @@ const Orders = () => {
 
   const statusClass = (status) => `status-badge status-${status.toLowerCase()}`;
 
+  const handleStatusChange = async (orderId, status) => {
+    try {
+      await updateOrderStatus(orderId, status);
+      setStatusError('');
+    } catch (err) {
+      setStatusError(err?.message || 'Could not update order status.');
+    }
+  };
+
   return (
     <PageTransition>
       <div className="page-shell page-top-space white-main">
@@ -61,7 +73,23 @@ const Orders = () => {
               </div>
             </ScrollReveal>
 
-            {orders.length === 0 ? (
+            {loading ? (
+              <ScrollReveal>
+                <div className="empty-state">
+                  <ShoppingCart size={64} style={{ marginBottom: '16px', opacity: 0.3 }} />
+                  <h2>Loading orders...</h2>
+                  <p>Please wait while we sync your order history.</p>
+                </div>
+              </ScrollReveal>
+            ) : error ? (
+              <ScrollReveal>
+                <div className="empty-state">
+                  <ShoppingCart size={64} style={{ marginBottom: '16px', opacity: 0.3 }} />
+                  <h2>Could not load orders</h2>
+                  <p>{error}</p>
+                </div>
+              </ScrollReveal>
+            ) : orders.length === 0 ? (
               <ScrollReveal>
                 <div className="empty-state">
                   <ShoppingCart size={64} style={{ marginBottom: '16px', opacity: 0.3 }} />
@@ -71,6 +99,13 @@ const Orders = () => {
               </ScrollReveal>
             ) : (
               <>
+                {statusError && (
+                  <ScrollReveal>
+                    <div style={{ marginBottom: '20px', border: '1px solid #f2d2d2', background: '#fff1f1', color: '#b42318', padding: '12px 16px', borderRadius: '12px' }}>
+                      {statusError}
+                    </div>
+                  </ScrollReveal>
+                )}
                 <ScrollReveal>
                   <div className="orders-controls">
                     <div className="control-group">
@@ -198,20 +233,22 @@ const Orders = () => {
                               <p>{order.paymentMethod || 'Cash on Delivery'}</p>
                             </div>
 
-                            <div className="detail-section">
-                              <h4>Update status</h4>
-                              <select
-                                value={order.status}
-                                onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                className="status-select"
-                              >
-                                <option value="Pending">Pending</option>
-                                <option value="Processing">Processing</option>
-                                <option value="Shipped">Shipped</option>
-                                <option value="Delivered">Delivered</option>
-                                <option value="Cancelled">Cancelled</option>
-                              </select>
-                            </div>
+                            {isAdmin && (
+                              <div className="detail-section">
+                                <h4>Update status</h4>
+                                <select
+                                  value={order.status}
+                                  onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                  className="status-select"
+                                >
+                                  <option value="Pending">Pending</option>
+                                  <option value="Processing">Processing</option>
+                                  <option value="Shipped">Shipped</option>
+                                  <option value="Delivered">Delivered</option>
+                                  <option value="Cancelled">Cancelled</option>
+                                </select>
+                              </div>
+                            )}
 
                             <div className="detail-section">
                               <h4>Export order</h4>

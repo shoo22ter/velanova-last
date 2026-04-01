@@ -15,6 +15,7 @@ const Profile = () => {
     phone: user?.phone || '',
   });
   const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const profileStats = useMemo(
     () => [
@@ -36,12 +37,17 @@ const Profile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    updateProfile(formData);
-    setSuccessMsg('Profile updated successfully!');
-    setIsEditing(false);
-    window.setTimeout(() => setSuccessMsg(''), 3000);
+    try {
+      await updateProfile(formData);
+      setSuccessMsg('Profile updated successfully!');
+      setErrorMsg('');
+      setIsEditing(false);
+      window.setTimeout(() => setSuccessMsg(''), 3000);
+    } catch (err) {
+      setErrorMsg(err?.message || 'Failed to update profile.');
+    }
   };
 
   const handleCancelEdit = () => {
@@ -53,8 +59,8 @@ const Profile = () => {
     setIsEditing(false);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -128,6 +134,7 @@ const Profile = () => {
                     </div>
 
                     {successMsg && <div className="profile-success-alert">✓ {successMsg}</div>}
+                    {errorMsg && <div className="profile-success-alert" style={{ background: '#fff1f1', borderColor: '#f2d2d2', color: '#b42318' }}>{errorMsg}</div>}
 
                     {!isEditing ? (
                       <div className="profile-info-grid">

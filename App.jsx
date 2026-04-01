@@ -73,15 +73,15 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <ProductProvider>
-        <UserProvider>
+      <UserProvider>
+        <ProductProvider>
           <OrdersProvider>
             <CartProvider>
               <AppContent />
             </CartProvider>
           </OrdersProvider>
-        </UserProvider>
-      </ProductProvider>
+        </ProductProvider>
+      </UserProvider>
     </Router>
   );
 }

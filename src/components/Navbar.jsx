@@ -43,8 +43,8 @@ const Navbar = () => {
     return () => document.removeEventListener('click', closeMenus);
   }, []);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
     setUserMenuOpen(false);
   };

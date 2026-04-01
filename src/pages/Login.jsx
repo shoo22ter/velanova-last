@@ -8,6 +8,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ fullName: '', email: '', password: '', passwordConfirm: '', role: 'customer' });
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, register } = useUser();
   const navigate = useNavigate();
 
@@ -20,7 +21,7 @@ const Login = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isLogin) {
@@ -29,8 +30,15 @@ const Login = () => {
         setError('Please fill in all fields.');
         return;
       }
-      login(formData.email, formData.password, 'customer');
-      navigate('/');
+      setIsSubmitting(true);
+      try {
+        await login(formData.email, formData.password);
+        navigate('/');
+      } catch (err) {
+        setError(err?.message || 'Login failed. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       // Register validation
       if (!formData.fullName || !formData.email || !formData.password || !formData.passwordConfirm) {
@@ -46,19 +54,26 @@ const Login = () => {
         return;
       }
       
-      // Register user
-      register(formData.fullName, formData.email, formData.password, 'customer');
-      
-      // Show success message and switch to login
-      setSuccessMsg(`✓ Registration successful! Welcome, ${formData.fullName}. Please sign in with your email.`);
-      setError('');
-      setFormData({ fullName: '', email: '', password: '', passwordConfirm: '', role: 'customer' });
-      
-      // Auto-switch to login mode after 2 seconds
-      setTimeout(() => {
-        setIsLogin(true);
-        setSuccessMsg('');
-      }, 2000);
+      setIsSubmitting(true);
+      try {
+        // Register user
+        await register(formData.fullName, formData.email, formData.password);
+
+        // Show success message and switch to login
+        setSuccessMsg(`✓ Registration successful! Welcome, ${formData.fullName}. Please sign in with your email.`);
+        setError('');
+        setFormData({ fullName: '', email: '', password: '', passwordConfirm: '', role: 'customer' });
+
+        // Auto-switch to login mode after 2 seconds
+        setTimeout(() => {
+          setIsLogin(true);
+          setSuccessMsg('');
+        }, 2000);
+      } catch (err) {
+        setError(err?.message || 'Registration failed. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -122,8 +137,8 @@ const Login = () => {
                       <input type="password" name="passwordConfirm" className="form-control" value={formData.passwordConfirm} onChange={handleChange} placeholder="••••••" />
                     </div>
                   )}
-                  <button type="submit" className="btn btn-primary btn-full" style={{ marginTop: '24px' }}>
-                    {isLogin ? 'Sign In' : 'Create Account'}
+                  <button type="submit" className="btn btn-primary btn-full" style={{ marginTop: '24px' }} disabled={isSubmitting}>
+                    {isSubmitting ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
                   </button>
                 </form>
 

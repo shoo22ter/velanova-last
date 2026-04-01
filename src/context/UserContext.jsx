@@ -1,96 +1,93 @@
 import React, { createContext, useEffect, useState, useContext } from 'react';
+import { authApi } from '../api/velanovaApi';
 
 const UserContext = createContext();
-const ADMIN_EMAIL = 'teid83@gmail.com';
+const STORAGE_KEY = 'velanova-auth';
 
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  // Load user from localStorage on mount
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('velanova-user');
-    if (!saved) return null;
+  const [auth, setAuth] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return { user: null, token: null };
 
     try {
       const parsed = JSON.parse(saved);
-      const normalizedEmail = String(parsed?.email || '').trim().toLowerCase();
       return {
-        ...parsed,
-        email: normalizedEmail || parsed?.email || '',
-        role: normalizedEmail === ADMIN_EMAIL ? 'admin' : 'customer',
+        user: parsed?.user || null,
+        token: parsed?.token || null,
       };
     } catch {
-      return null;
+      return { user: null, token: null };
     }
   });
+  const [loading, setLoading] = useState(false);
 
-  // Persist user to localStorage when it changes
+  const user = auth.user;
+  const token = auth.token;
+
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('velanova-user', JSON.stringify(user));
+    if (user && token) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user, token }));
     } else {
-      localStorage.removeItem('velanova-user');
+      localStorage.removeItem(STORAGE_KEY);
     }
-  }, [user]);
+  }, [user, token]);
 
-  // Register new user
-  const register = (fullName, email, password, role = 'customer') => {
-    const normalizedEmail = String(email || '').trim().toLowerCase();
-    const normalizedRole = normalizedEmail === ADMIN_EMAIL ? 'admin' : 'customer';
-    const newUser = {
-      id: `usr-${Date.now()}`,
-      fullName,
-      email: normalizedEmail,
-      phone: '',
-      role: normalizedRole,
-      createdAt: new Date().toLocaleString(),
-    };
-    setUser(newUser);
-    return newUser;
-  };
-
-  // Login user (demo - in production, validate against backend)
-  const login = (email, password, role = 'customer') => {
-    // Demo: accept any email/password combination
-    const normalizedEmail = String(email || '').trim().toLowerCase();
-    const normalizedRole = normalizedEmail === ADMIN_EMAIL ? 'admin' : 'customer';
-    const loginUser = {
-      id: `usr-${Date.now()}`,
-      email: normalizedEmail,
-      phone: '',
-      role: normalizedRole,
-      fullName: normalizedEmail.split('@')[0],
-      createdAt: new Date().toLocaleString(),
-    };
-    setUser(loginUser);
-    return loginUser;
-  };
-
-  // Logout user
-  const logout = () => {
-    setUser(null);
-  };
-
-  // Update user profile
-  const updateProfile = (updatedData) => {
-    if (user) {
-      const normalizedEmail = String(updatedData?.email ?? user.email ?? '').trim().toLowerCase();
-      const updated = {
-        ...user,
-        ...updatedData,
-        email: normalizedEmail,
-        role: normalizedEmail === ADMIN_EMAIL ? 'admin' : 'customer',
-      };
-      setUser(updated);
-      return updated;
+  const login = async (email, password) => {
+    setLoading(true);
+    try {
+      const data = await authApi.login(email, password);
+      setAuth({ user: data.user, token: data.token });
+      return data.user;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const isAuthenticated = !!user;
+  const register = async (fullName, email, password) => {
+    setLoading(true);
+    try {
+      const data = await authApi.register(fullName, email, password);
+      return data.user;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    const currentToken = token;
+    setAuth({ user: null, token: null });
+    if (!currentToken) return;
+
+    try {
+      await authApi.logout(currentToken);
+    } catch {
+      // Ignore logout errors for now.
+    }
+  };
+
+  const updateProfile = async (updatedData) => {
+    if (!token) {
+      throw new Error('You must be logged in to update your profile.');
+    }
+    setLoading(true);
+    try {
+      const data = await authApi.updateProfile(token, updatedData);
+      setAuth((prev) => ({ ...prev, user: data.user }));
+      return data.user;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isAuthenticated = !!user && !!token;
   const isAdmin = user?.role === 'admin';
 
   return (
-    <UserContext.Provider value={{ user, register, login, logout, updateProfile, isAuthenticated, isAdmin }}>
+    <UserContext.Provider
+      value={{ user, token, login, register, logout, updateProfile, isAuthenticated, isAdmin, authLoading: loading }}
+    >
       {children}
     </UserContext.Provider>
   );

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { products as initialProducts } from '../data/mockData';
+import { productApi } from '../api/velanovaApi';
+import { useUser } from './UserContext';
 
 const ProductContext = createContext();
 
@@ -29,7 +30,7 @@ const normalizeProduct = (product) => {
 
   return {
     ...product,
-    salePrice: product.salePrice === '' ? '' : product.salePrice,
+    salePrice: product.salePrice === '' || product.salePrice === null ? '' : product.salePrice,
     sizes,
     stock: hasSizes ? totalSizeStock(sizes) : Math.max(0, Number(product.stock ?? 0)),
     stockAlertLevel: Math.max(0, Number(product.stockAlertLevel ?? 5)),
@@ -38,100 +39,57 @@ const normalizeProduct = (product) => {
   };
 };
 
-const normalizeProducts = (items) => Array.isArray(items) ? items.map(normalizeProduct) : [];
+const normalizeProducts = (items) => (Array.isArray(items) ? items.map(normalizeProduct) : []);
 
 export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('velanova_products');
-    const source = saved ? JSON.parse(saved) : initialProducts;
-    const normalized = normalizeProducts(source);
+  const { token } = useUser();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-    // Ensure SALE/NEW flags always exist for older localStorage data versions
-    // so badges render consistently across Home/Shop cards.
-    let shouldPersistNormalized = false;
-    const patched = normalized.map((p) => {
-      const hasIsNew = Object.prototype.hasOwnProperty.call(p, 'isNew');
-      const hasIsOnSale = Object.prototype.hasOwnProperty.call(p, 'isOnSale');
-      const next = {
-        ...p,
-        isNew: hasIsNew ? Boolean(p.isNew) : false,
-        isOnSale: hasIsOnSale ? Boolean(p.isOnSale) : false,
-      };
-
-      if (!hasIsNew || !hasIsOnSale) shouldPersistNormalized = true;
-      return next;
-    });
-
-    if (shouldPersistNormalized) {
-      localStorage.setItem('velanova_products', JSON.stringify(patched));
+  const loadProducts = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await productApi.list();
+      setProducts(normalizeProducts(data?.products || []));
+    } catch (err) {
+      setError(err?.message || 'Failed to load products.');
+    } finally {
+      setLoading(false);
     }
-
-    return patched;
-  });
+  };
 
   useEffect(() => {
-    try {
-      localStorage.setItem('velanova_products', JSON.stringify(products));
-    } catch (error) {
-      if (error?.name === 'QuotaExceededError') {
-        console.error('Storage full: product changes could not be persisted.', error);
-      } else {
-        console.error('Failed to save product data.', error);
-      }
-    }
-  }, [products]);
+    loadProducts();
+  }, []);
 
-  const addProduct = (newProduct) => {
-    const product = normalizeProduct({
-      ...newProduct,
-      id: `p${Date.now()}`,
-    });
-
-    setProducts((prev) => [...prev, product]);
+  const addProduct = async (newProduct) => {
+    if (!token) throw new Error('You must be logged in as admin to add products.');
+    const data = await productApi.create(token, newProduct);
+    const product = normalizeProduct(data.product);
+    setProducts((prev) => [product, ...prev]);
     return product;
   };
 
-  const updateProduct = (id, updatedData) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? normalizeProduct({ ...p, ...updatedData }) : p))
-    );
+  const updateProduct = async (id, updatedData) => {
+    if (!token) throw new Error('You must be logged in as admin to update products.');
+    const data = await productApi.update(token, id, updatedData);
+    const product = normalizeProduct(data.product);
+    setProducts((prev) => prev.map((p) => (p.id === id ? product : p)));
+    return product;
   };
 
-  const deleteProduct = (id) => {
+  const deleteProduct = async (id) => {
+    if (!token) throw new Error('You must be logged in as admin to delete products.');
+    await productApi.remove(token, id);
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const resetToDefault = () => {
-    const normalizedDefaults = normalizeProducts(initialProducts);
-    setProducts(normalizedDefaults);
-    localStorage.removeItem('velanova_products');
-  };
-
-  const reduceStock = (productId, quantity, selectedSize = null) => {
-    setProducts((prev) =>
-      prev.map((p) => {
-        if (p.id !== productId) return p;
-
-        if (selectedSize && Array.isArray(p.sizes) && p.sizes.length > 0) {
-          const nextSizes = p.sizes.map((variant) =>
-            variant.size === selectedSize
-              ? { ...variant, stock: Math.max(0, Number(variant.stock || 0) - quantity) }
-              : variant
-          );
-          return { ...p, sizes: nextSizes, stock: totalSizeStock(nextSizes) };
-        }
-
-        return { ...p, stock: Math.max(0, Number(p.stock || 0) - quantity) };
-      })
-    );
-  };
-
-  const updateStock = (productId, newStock) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === productId ? normalizeProduct({ ...p, stock: Math.max(0, Number(newStock || 0)) }) : p
-      )
-    );
+  const resetToDefault = async () => {
+    if (!token) throw new Error('You must be logged in as admin to reset products.');
+    const data = await productApi.reset(token);
+    setProducts(normalizeProducts(data?.products || []));
   };
 
   return (
@@ -142,9 +100,10 @@ export const ProductProvider = ({ children }) => {
         updateProduct,
         deleteProduct,
         resetToDefault,
-        reduceStock,
-        updateStock,
+        reloadProducts: loadProducts,
         defaultVariants: DEFAULT_VARIANTS,
+        loading,
+        error,
       }}
     >
       {children}

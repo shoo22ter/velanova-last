@@ -9,7 +9,7 @@ import ProductForm from '../components/ProductForm';
 import './Admin.css';
 
 const Admin = () => {
-  const { products, addProduct, updateProduct, deleteProduct, resetToDefault } = useProducts();
+  const { products, addProduct, updateProduct, deleteProduct, resetToDefault, loading, error } = useProducts();
   const { orders } = useOrders();
 
   const [showForm, setShowForm] = useState(false);
@@ -42,36 +42,44 @@ const Admin = () => {
     window.__velanovaAdminFlash = window.setTimeout(() => setSuccessMsg(''), 2500);
   };
 
-  const handleAddProduct = (formData) => {
+  const handleAddProduct = async (formData) => {
     try {
-      addProduct(formData);
+      await addProduct(formData);
       setShowForm(false);
       flash('Product added successfully.');
     } catch (error) {
-      flash('Failed to save product. Try a smaller image file.', 'error');
+      flash(error?.message || 'Failed to save product. Try a smaller image file.', 'error');
     }
   };
 
-  const handleUpdateProduct = (formData) => {
+  const handleUpdateProduct = async (formData) => {
     try {
-      updateProduct(editingProduct.id, formData);
+      await updateProduct(editingProduct.id, formData);
       setEditingProduct(null);
       flash('Product updated successfully.');
     } catch (error) {
-      flash('Failed to update product. Try a smaller image file.', 'error');
+      flash(error?.message || 'Failed to update product. Try a smaller image file.', 'error');
     }
   };
 
-  const handleConfirmDelete = (id) => {
-    deleteProduct(id);
-    setDeleteConfirm(null);
-    flash('Product deleted.');
+  const handleConfirmDelete = async (id) => {
+    try {
+      await deleteProduct(id);
+      setDeleteConfirm(null);
+      flash('Product deleted.');
+    } catch (error) {
+      flash(error?.message || 'Failed to delete product.', 'error');
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (window.confirm('Reset to default products? This cannot be undone.')) {
-      resetToDefault();
-      flash('Default products restored.');
+      try {
+        await resetToDefault();
+        flash('Default products restored.');
+      } catch (error) {
+        flash(error?.message || 'Failed to reset products.', 'error');
+      }
     }
   };
 
@@ -107,7 +115,11 @@ const Admin = () => {
                 </div>
 
                 {successMsg && <div className="admin-alert success">✓ {successMsg}</div>}
-                {errorMsg && <div className="admin-alert" style={{ borderColor: '#f2d2d2', background: '#fff1f1', color: '#b42318' }}>⚠ {errorMsg}</div>}
+                {(errorMsg || error) && (
+                  <div className="admin-alert" style={{ borderColor: '#f2d2d2', background: '#fff1f1', color: '#b42318' }}>
+                    ⚠ {errorMsg || error}
+                  </div>
+                )}
 
                 <div className="admin-actions-row">
                   <button
@@ -150,7 +162,11 @@ const Admin = () => {
                 </div>
 
                 <div className="products-grid-admin">
-                  {filteredProducts.length === 0 ? (
+                  {loading ? (
+                    <div className="admin-empty-card">
+                      <p>Loading products...</p>
+                    </div>
+                  ) : filteredProducts.length === 0 ? (
                     <div className="admin-empty-card">
                       <p>No products match your search.</p>
                     </div>

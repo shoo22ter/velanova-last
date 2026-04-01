@@ -32,6 +32,8 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [placed, setPlaced] = useState(false);
   const [receipt, setReceipt] = useState(null);
+  const [isPlacing, setIsPlacing] = useState(false);
+  const [placeError, setPlaceError] = useState('');
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
@@ -65,7 +67,7 @@ const Checkout = () => {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -81,10 +83,18 @@ const Checkout = () => {
       status: 'Pending',
     };
 
-    addOrder(orderData);
-    setReceipt(orderData);
-    clearCart();
-    setPlaced(true);
+    setIsPlacing(true);
+    setPlaceError('');
+    try {
+      const created = await addOrder(orderData);
+      setReceipt(created || orderData);
+      clearCart();
+      setPlaced(true);
+    } catch (error) {
+      setPlaceError(error?.message || 'Could not place order. Please try again.');
+    } finally {
+      setIsPlacing(false);
+    }
   };
 
   const downloadReceiptPDF = async () => {
@@ -282,8 +292,9 @@ const Checkout = () => {
                             </button>
                           ))}
 
-                          <button type="submit" className="btn btn-primary btn-full checkout-submit-btn">
-Place Order Securely — ${grandTotal.toFixed(2)}
+                          {placeError && <div className="field-error" style={{ marginBottom: '12px' }}>{placeError}</div>}
+                          <button type="submit" className="btn btn-primary btn-full checkout-submit-btn" disabled={isPlacing}>
+                            {isPlacing ? 'Placing order...' : `Place Order Securely — $${grandTotal.toFixed(2)}`}
                           </button>
                         </div>
                       </form>
