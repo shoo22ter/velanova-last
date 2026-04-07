@@ -1,9 +1,24 @@
 import React, { useState } from 'react';
 import { PageTransition, ScrollReveal } from '../components/ScrollReveal';
+import { useSettings } from '../context/SettingsContext';
 
 const Contact = () => {
+  const { settings } = useSettings();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+
+  const supportEmail = settings.supportEmail || 'support@velanova.com';
+  const supportPhone = settings.supportPhone || '81541606';
+  const addressLines = [
+    settings.addressLine1 || 'Beirut, Lebanon',
+    settings.addressLine2,
+    settings.city && settings.city !== 'Beirut' ? settings.city : '',
+    settings.region,
+    settings.country || 'Middle East',
+  ].filter(Boolean);
+  const hoursWeekday = settings.hoursWeekday || 'Monday - Friday: 9:00 AM - 6:00 PM';
+  const hoursSaturday = settings.hoursSaturday || 'Saturday: 10:00 AM - 4:00 PM';
+  const hoursSunday = settings.hoursSunday || 'Sunday: Closed';
 
   // Handle form input change
   const handleChange = (e) => {
@@ -54,36 +69,40 @@ const Contact = () => {
 
                   <div style={{ marginBottom: '28px' }}>
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>Email</h3>
-                    <a href="mailto:support@velanova.com" style={{ color: 'var(--color-gold)', textDecoration: 'none', fontSize: '1.05rem' }}>
-                      support@velanova.com
+                    <a href={`mailto:${supportEmail}`} style={{ color: 'var(--color-gold)', textDecoration: 'none', fontSize: '1.05rem' }}>
+                      {supportEmail}
                     </a>
                   </div>
 
                   <div style={{ marginBottom: '28px' }}>
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>Phone</h3>
-                    <a href="tel:81541606" style={{ color: 'var(--color-gold)', textDecoration: 'none', fontSize: '1.05rem' }}>
-                      81541606
+                    <a href={`tel:${supportPhone}`} style={{ color: 'var(--color-gold)', textDecoration: 'none', fontSize: '1.05rem' }}>
+                      {supportPhone}
                     </a>
                   </div>
 
                   <div style={{ marginBottom: '28px' }}>
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>Address</h3>
                     <p style={{ color: 'var(--color-dark-gray)', fontSize: '1rem' }}>
-                      Beirut, Lebanon<br />
-                      Middle East
+                      {addressLines.map((line, index) => (
+                        <span key={line}>
+                          {line}
+                          {index < addressLines.length - 1 && <br />}
+                        </span>
+                      ))}
                     </p>
                   </div>
 
                   <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid #eee' }}>
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '12px' }}>Business Hours</h3>
                     <p style={{ color: 'var(--color-dark-gray)', fontSize: '0.95rem', marginBottom: '6px' }}>
-                      Monday - Friday: 9:00 AM - 6:00 PM
+                      {hoursWeekday}
                     </p>
                     <p style={{ color: 'var(--color-dark-gray)', fontSize: '0.95rem', marginBottom: '6px' }}>
-                      Saturday: 10:00 AM - 4:00 PM
+                      {hoursSaturday}
                     </p>
                     <p style={{ color: 'var(--color-dark-gray)', fontSize: '0.95rem' }}>
-                      Sunday: Closed
+                      {hoursSunday}
                     </p>
                   </div>
                 </div>

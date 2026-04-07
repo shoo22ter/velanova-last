@@ -19,6 +19,10 @@ import { CartProvider } from './context/CartContext';
 import { UserProvider, useUser } from './context/UserContext';
 import { ProductProvider } from './context/ProductContext';
 import { OrdersProvider } from './context/OrdersContext';
+import { BannerProvider } from './context/BannerContext';
+import { TestimonialProvider } from './context/TestimonialContext';
+import { FaqProvider } from './context/FaqContext';
+import { SettingsProvider } from './context/SettingsContext';
 
 import { AnimatePresence } from 'framer-motion';
 
@@ -82,13 +86,21 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <ProductProvider>
-          <OrdersProvider>
-            <CartProvider>
-              <AppContent />
-            </CartProvider>
-          </OrdersProvider>
-        </ProductProvider>
+        <SettingsProvider>
+          <BannerProvider>
+            <TestimonialProvider>
+              <FaqProvider>
+                <ProductProvider>
+                  <OrdersProvider>
+                    <CartProvider>
+                      <AppContent />
+                    </CartProvider>
+                  </OrdersProvider>
+                </ProductProvider>
+              </FaqProvider>
+            </TestimonialProvider>
+          </BannerProvider>
+        </SettingsProvider>
       </UserProvider>
     </Router>
   );

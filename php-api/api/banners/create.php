@@ -1,0 +1,30 @@
+<?php
+
+require_once __DIR__ . '/../_init.php';
+
+require_method('POST');
+require_admin($pdo);
+
+$input = get_json_body();
+
+$title = trim((string) ($input['title'] ?? ''));
+$subtitle = trim((string) ($input['subtitle'] ?? ''));
+$image = trim((string) ($input['image'] ?? ''));
+$ctaLabel = trim((string) ($input['ctaLabel'] ?? ''));
+$ctaLink = trim((string) ($input['ctaLink'] ?? ''));
+$isActive = array_key_exists('isActive', $input) ? (!empty($input['isActive']) ? 1 : 0) : 1;
+$sortOrder = isset($input['sortOrder']) ? (int) $input['sortOrder'] : 0;
+
+if ($title === '' || $image === '') {
+    json_response(['error' => 'Title and image are required.'], 422);
+}
+
+$stmt = $pdo->prepare('INSERT INTO banners (title, subtitle, image_url, cta_label, cta_link, is_active, sort_order, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())');
+$stmt->execute([$title, $subtitle, $image, $ctaLabel, $ctaLink, $isActive, $sortOrder]);
+
+$bannerId = (int) $pdo->lastInsertId();
+$bannerStmt = $pdo->prepare('SELECT * FROM banners WHERE id = ?');
+$bannerStmt->execute([$bannerId]);
+$banner = $bannerStmt->fetch();
+
+json_response(['banner' => format_banner($banner)], 201);

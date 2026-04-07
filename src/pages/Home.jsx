@@ -3,12 +3,18 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { heroSlides } from '../data/mockData';
 import { useProducts } from '../context/ProductContext';
+import { useBanners } from '../context/BannerContext';
+import { useTestimonials } from '../context/TestimonialContext';
+import { useFaqs } from '../context/FaqContext';
 import ProductCard from '../components/ProductCard';
 import './Home.css';
 import { PageTransition, ScrollReveal, FadeIn } from '../components/ScrollReveal';
 
 const Home = () => {
   const { products } = useProducts();
+  const { banners } = useBanners();
+  const { testimonials } = useTestimonials();
+  const { faqs } = useFaqs();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const featuredProducts = useMemo(() => products.slice(0, 3), [products]);
@@ -16,23 +22,51 @@ const Home = () => {
     () => products.filter((product) => product.isOnSale && product.salePrice),
     [products],
   );
+  const activeBanners = useMemo(
+    () => (Array.isArray(banners) ? banners.filter((banner) => banner.isActive) : []),
+    [banners],
+  );
+  const slides = useMemo(
+    () => (activeBanners.length > 0 ? activeBanners : heroSlides),
+    [activeBanners],
+  );
+  const activeTestimonials = useMemo(
+    () => (Array.isArray(testimonials) ? testimonials.filter((item) => item.isActive) : []),
+    [testimonials],
+  );
+  const activeFaqs = useMemo(
+    () => (Array.isArray(faqs) ? faqs.filter((item) => item.isActive) : []),
+    [faqs],
+  );
 
   useEffect(() => {
+    if (slides.length <= 1) return undefined;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
+
+  useEffect(() => {
+    if (currentSlide >= slides.length) {
+      setCurrentSlide(0);
+    }
+  }, [currentSlide, slides.length]);
 
   return (
     <PageTransition>
       <div className="home-page">
         <section className="hero">
           <div className="hero-slider">
-            {heroSlides.map((slide, index) => (
+            {slides.map((slide, index) => {
+              const primaryLabel = slide.ctaLabel || 'Shop collection';
+              const primaryLink = slide.ctaLink || '/shop';
+              const isExternal = /^https?:\/\//i.test(primaryLink);
+
+              return (
               <div
-                key={slide.id}
+                key={slide.id || slide.image || index}
                 className={`slide ${index === currentSlide ? 'active' : ''}`}
                 style={{ backgroundImage: `url(${slide.image})` }}
               >
@@ -50,9 +84,15 @@ const Home = () => {
                   </ScrollReveal>
                   <ScrollReveal delay={0.58}>
                     <div className="hero-actions">
-                      <Link to="/shop" className="btn btn-gold">
-                        Shop collection
-                      </Link>
+                      {isExternal ? (
+                        <a href={primaryLink} className="btn btn-gold">
+                          {primaryLabel}
+                        </a>
+                      ) : (
+                        <Link to={primaryLink} className="btn btn-gold">
+                          {primaryLabel}
+                        </Link>
+                      )}
                       <Link to="/about" className="btn btn-primary hero-dark-btn">
                         Discover Velanova
                       </Link>
@@ -60,14 +100,15 @@ const Home = () => {
                   </ScrollReveal>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="hero-progress-wrap">
             <div className="container hero-progress">
-              {heroSlides.map((slide, index) => (
+              {slides.map((slide, index) => (
                 <button
-                  key={slide.id}
+                  key={slide.id || slide.image || index}
                   type="button"
                   className={index === currentSlide ? 'active' : ''}
                   onClick={() => setCurrentSlide(index)}
@@ -129,6 +170,67 @@ const Home = () => {
               </div>
             </div>
           </section>
+
+          {activeTestimonials.length > 0 && (
+            <section className="section-padding surface-white">
+              <div className="container">
+                <div className="section-header">
+                  <p className="section-kicker">Client Voices</p>
+                  <h2 className="section-title">Loved by clients who crave a premium ritual</h2>
+                  <p className="section-copy">
+                    Real feedback from customers and industry professionals who trust Velanova for their daily routine.
+                  </p>
+                </div>
+
+                <div className="testimonials-grid">
+                  {activeTestimonials.slice(0, 6).map((testimonial, idx) => (
+                    <ScrollReveal key={testimonial.id || idx} delay={idx * 0.06}>
+                      <div className="testimonial-card">
+                        <div className="testimonial-rating">
+                          {'*'.repeat(Math.min(5, Math.max(1, testimonial.rating || 5)))}
+                        </div>
+                        <p className="testimonial-quote">“{testimonial.quote}”</p>
+                        <div className="testimonial-person">
+                          {testimonial.avatar && (
+                            <img src={testimonial.avatar} alt={testimonial.name} />
+                          )}
+                          <div>
+                            <strong>{testimonial.name}</strong>
+                            {testimonial.role && <span>{testimonial.role}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </ScrollReveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {activeFaqs.length > 0 && (
+            <section className="section-padding surface-off-white">
+              <div className="container">
+                <div className="section-header">
+                  <p className="section-kicker">FAQ</p>
+                  <h2 className="section-title">Answers to help you shop with confidence</h2>
+                  <p className="section-copy">
+                    Quick clarifications about our products, policies, and delivery process.
+                  </p>
+                </div>
+
+                <div className="faq-grid">
+                  {activeFaqs.slice(0, 6).map((faq, idx) => (
+                    <ScrollReveal key={faq.id || idx} delay={idx * 0.05}>
+                      <div className="faq-card">
+                        <h4 className="faq-question">{faq.question}</h4>
+                        <p className="faq-answer">{faq.answer}</p>
+                      </div>
+                    </ScrollReveal>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
 
           <section className="section-padding surface-white">
             <div className="container story-layout">

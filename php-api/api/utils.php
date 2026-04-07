@@ -137,6 +137,61 @@ function format_product(array $row): array
     ];
 }
 
+function format_banner(array $row): array
+{
+    return [
+        'id' => (int) $row['id'],
+        'title' => $row['title'],
+        'subtitle' => $row['subtitle'] ?? '',
+        'image' => $row['image_url'] ?? '',
+        'ctaLabel' => $row['cta_label'] ?? '',
+        'ctaLink' => $row['cta_link'] ?? '',
+        'isActive' => (bool) ($row['is_active'] ?? 0),
+        'sortOrder' => (int) ($row['sort_order'] ?? 0),
+    ];
+}
+
+function format_testimonial(array $row): array
+{
+    return [
+        'id' => (int) $row['id'],
+        'name' => $row['name'],
+        'role' => $row['role'] ?? '',
+        'quote' => $row['quote'] ?? '',
+        'avatar' => $row['avatar_url'] ?? '',
+        'rating' => (int) ($row['rating'] ?? 5),
+        'isActive' => (bool) ($row['is_active'] ?? 0),
+        'sortOrder' => (int) ($row['sort_order'] ?? 0),
+    ];
+}
+
+function format_faq(array $row): array
+{
+    return [
+        'id' => (int) $row['id'],
+        'question' => $row['question'],
+        'answer' => $row['answer'] ?? '',
+        'isActive' => (bool) ($row['is_active'] ?? 0),
+        'sortOrder' => (int) ($row['sort_order'] ?? 0),
+    ];
+}
+
+function format_settings(array $row): array
+{
+    return [
+        'supportEmail' => $row['support_email'] ?? '',
+        'supportPhone' => $row['support_phone'] ?? '',
+        'addressLine1' => $row['address_line1'] ?? '',
+        'addressLine2' => $row['address_line2'] ?? '',
+        'city' => $row['city'] ?? '',
+        'region' => $row['region'] ?? '',
+        'country' => $row['country'] ?? '',
+        'hoursWeekday' => $row['hours_weekday'] ?? '',
+        'hoursSaturday' => $row['hours_saturday'] ?? '',
+        'hoursSunday' => $row['hours_sunday'] ?? '',
+    ];
+}
+
 function format_order(array $order, array $items): array
 {
     return [

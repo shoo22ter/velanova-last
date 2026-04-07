@@ -58,3 +58,29 @@ export const orderApi = {
     apiRequest('/orders/update-status.php', { method: 'POST', token, body: { id, status } }),
   remove: (token, id) => apiRequest('/orders/delete.php', { method: 'POST', token, body: { id } }),
 };
+
+export const bannerApi = {
+  list: () => apiRequest('/banners/index.php'),
+  create: (token, payload) => apiRequest('/banners/create.php', { method: 'POST', token, body: payload }),
+  update: (token, id, payload) => apiRequest('/banners/update.php', { method: 'POST', token, body: { ...payload, id } }),
+  remove: (token, id) => apiRequest('/banners/delete.php', { method: 'POST', token, body: { id } }),
+};
+
+export const testimonialApi = {
+  list: () => apiRequest('/testimonials/index.php'),
+  create: (token, payload) => apiRequest('/testimonials/create.php', { method: 'POST', token, body: payload }),
+  update: (token, id, payload) => apiRequest('/testimonials/update.php', { method: 'POST', token, body: { ...payload, id } }),
+  remove: (token, id) => apiRequest('/testimonials/delete.php', { method: 'POST', token, body: { id } }),
+};
+
+export const faqApi = {
+  list: () => apiRequest('/faqs/index.php'),
+  create: (token, payload) => apiRequest('/faqs/create.php', { method: 'POST', token, body: payload }),
+  update: (token, id, payload) => apiRequest('/faqs/update.php', { method: 'POST', token, body: { ...payload, id } }),
+  remove: (token, id) => apiRequest('/faqs/delete.php', { method: 'POST', token, body: { id } }),
+};
+
+export const settingsApi = {
+  get: () => apiRequest('/settings/get.php'),
+  update: (token, payload) => apiRequest('/settings/update.php', { method: 'POST', token, body: payload }),
+};
