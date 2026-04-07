@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 07, 2026 at 05:35 PM
+-- Generation Time: Apr 07, 2026 at 06:31 PM
 -- Server version: 8.2.0
 -- PHP Version: 7.4.33
 
@@ -20,6 +20,45 @@ SET time_zone = "+00:00";
 --
 -- Database: `velanova_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `banners`
+--
+
+DROP TABLE IF EXISTS `banners`;
+CREATE TABLE IF NOT EXISTS `banners` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(180) NOT NULL,
+  `subtitle` varchar(180) DEFAULT '',
+  `image_url` text NOT NULL,
+  `cta_label` varchar(80) DEFAULT '',
+  `cta_link` varchar(255) DEFAULT '',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faqs`
+--
+
+DROP TABLE IF EXISTS `faqs`;
+CREATE TABLE IF NOT EXISTS `faqs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `question` varchar(255) NOT NULL,
+  `answer` text NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -87,6 +126,75 @@ INSERT INTO `products` (`id`, `name`, `category`, `price`, `sale_price`, `stock`
 (1, 'Golden Glow Serum', 'Skin', 39.99, 34.99, 50, 'Brightening serum for daily use', '', 1, 1, '2026-03-31 09:41:20'),
 (2, 'Silk Body Lotion', 'Body', 24.50, NULL, 80, 'Hydrating lotion for smooth skin', '', 0, 0, '2026-03-31 09:41:20'),
 (3, 'Botanical Hair Oil', 'Hair', 29.00, 25.00, 40, 'Nourishing scalp and hair oil', '', 1, 1, '2026-03-31 09:41:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_sessions_token` (`token_hash`),
+  KEY `idx_sessions_user` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `user_id`, `token_hash`, `expires_at`, `created_at`) VALUES
+(1, 1, '1509928e28225ec00bafdb947699da0df8c243ddc45b8a03eef0e4861007e15a', '2026-04-14 18:25:14', '2026-04-07 21:25:14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `site_settings`
+--
+
+DROP TABLE IF EXISTS `site_settings`;
+CREATE TABLE IF NOT EXISTS `site_settings` (
+  `id` int NOT NULL,
+  `support_email` varchar(190) DEFAULT '',
+  `support_phone` varchar(40) DEFAULT '',
+  `address_line1` varchar(190) DEFAULT '',
+  `address_line2` varchar(190) DEFAULT '',
+  `city` varchar(80) DEFAULT '',
+  `region` varchar(80) DEFAULT '',
+  `country` varchar(80) DEFAULT '',
+  `hours_weekday` varchar(120) DEFAULT '',
+  `hours_saturday` varchar(120) DEFAULT '',
+  `hours_sunday` varchar(120) DEFAULT '',
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `testimonials`
+--
+
+DROP TABLE IF EXISTS `testimonials`;
+CREATE TABLE IF NOT EXISTS `testimonials` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(120) NOT NULL,
+  `role` varchar(120) DEFAULT '',
+  `quote` text NOT NULL,
+  `avatar_url` text,
+  `rating` int NOT NULL DEFAULT '5',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
