@@ -85,7 +85,7 @@ const Home = () => {
                   <ScrollReveal delay={0.58}>
                     <div className="hero-actions">
                       {isExternal ? (
-                        <a href={primaryLink} className="btn btn-gold">
+                        <a href={primaryLink} className="btn btn-gold" target="_blank" rel="noreferrer">
                           {primaryLabel}
                         </a>
                       ) : (
@@ -189,7 +189,7 @@ const Home = () => {
                         <div className="testimonial-rating">
                           {'*'.repeat(Math.min(5, Math.max(1, testimonial.rating || 5)))}
                         </div>
-                        <p className="testimonial-quote">“{testimonial.quote}”</p>
+                        <p className="testimonial-quote">"{testimonial.quote}"</p>
                         <div className="testimonial-person">
                           {testimonial.avatar && (
                             <img src={testimonial.avatar} alt={testimonial.name} />

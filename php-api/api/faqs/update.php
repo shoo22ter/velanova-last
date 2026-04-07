@@ -28,4 +28,8 @@ $faqStmt = $pdo->prepare('SELECT * FROM faqs WHERE id = ?');
 $faqStmt->execute([$id]);
 $faq = $faqStmt->fetch();
 
+if (!$faq) {
+    json_response(['error' => 'FAQ not found.'], 404);
+}
+
 json_response(['faq' => format_faq($faq)]);

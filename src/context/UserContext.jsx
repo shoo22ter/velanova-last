@@ -23,8 +23,8 @@ export const UserProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(false);
 
-  const user = auth.user;
-  const token = auth.token;
+  const user = auth?.user ?? null;
+  const token = auth?.token ?? null;
 
   useEffect(() => {
     if (user && token) {
@@ -38,6 +38,9 @@ export const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await authApi.login(email, password);
+      if (!data?.user || !data?.token) {
+        throw new Error('Login failed. Please try again.');
+      }
       setAuth({ user: data.user, token: data.token });
       return data.user;
     } finally {
@@ -49,6 +52,9 @@ export const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await authApi.register(fullName, email, password);
+      if (!data?.user) {
+        throw new Error('Registration failed. Please try again.');
+      }
       return data.user;
     } finally {
       setLoading(false);
@@ -74,6 +80,9 @@ export const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await authApi.updateProfile(token, updatedData);
+      if (!data?.user) {
+        throw new Error('Profile update failed. Please try again.');
+      }
       setAuth((prev) => ({ ...prev, user: data.user }));
       return data.user;
     } finally {

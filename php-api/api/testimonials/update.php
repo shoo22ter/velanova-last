@@ -35,4 +35,8 @@ $testimonialStmt = $pdo->prepare('SELECT * FROM testimonials WHERE id = ?');
 $testimonialStmt->execute([$id]);
 $testimonial = $testimonialStmt->fetch();
 
+if (!$testimonial) {
+    json_response(['error' => 'Testimonial not found.'], 404);
+}
+
 json_response(['testimonial' => format_testimonial($testimonial)]);

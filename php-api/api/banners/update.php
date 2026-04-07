@@ -31,4 +31,8 @@ $bannerStmt = $pdo->prepare('SELECT * FROM banners WHERE id = ?');
 $bannerStmt->execute([$id]);
 $banner = $bannerStmt->fetch();
 
+if (!$banner) {
+    json_response(['error' => 'Banner not found.'], 404);
+}
+
 json_response(['banner' => format_banner($banner)]);

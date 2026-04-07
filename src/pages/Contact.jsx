@@ -9,13 +9,22 @@ const Contact = () => {
 
   const supportEmail = settings.supportEmail || 'support@velanova.com';
   const supportPhone = settings.supportPhone || '81541606';
-  const addressLines = [
-    settings.addressLine1 || 'Beirut, Lebanon',
+  const hasAddress = [
+    settings.addressLine1,
     settings.addressLine2,
-    settings.city && settings.city !== 'Beirut' ? settings.city : '',
+    settings.city,
     settings.region,
-    settings.country || 'Middle East',
-  ].filter(Boolean);
+    settings.country,
+  ].some(Boolean);
+  const addressLines = hasAddress
+    ? [
+      settings.addressLine1,
+      settings.addressLine2,
+      settings.city,
+      settings.region,
+      settings.country,
+    ].filter(Boolean)
+    : ['Beirut, Lebanon', 'Middle East'];
   const hoursWeekday = settings.hoursWeekday || 'Monday - Friday: 9:00 AM - 6:00 PM';
   const hoursSaturday = settings.hoursSaturday || 'Saturday: 10:00 AM - 4:00 PM';
   const hoursSunday = settings.hoursSunday || 'Sunday: Closed';
@@ -85,7 +94,7 @@ const Contact = () => {
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>Address</h3>
                     <p style={{ color: 'var(--color-dark-gray)', fontSize: '1rem' }}>
                       {addressLines.map((line, index) => (
-                        <span key={line}>
+                        <span key={`${line}-${index}`}>
                           {line}
                           {index < addressLines.length - 1 && <br />}
                         </span>
