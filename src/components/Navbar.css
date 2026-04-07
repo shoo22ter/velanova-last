@@ -4,17 +4,19 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 18px 0;
+  padding: 0;
   transition: var(--transition-smooth);
   color: var(--color-white);
 }
 
 .navbar.scrolled {
-  padding: 12px 0;
+  padding: 0;
 }
 
 .nav-shell {
   position: relative;
+  max-width: 100%;
+  padding: 0;
 }
 
 .nav-container {
@@ -22,19 +24,19 @@
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  min-height: 72px;
-  padding: 0 20px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(9, 9, 9, 0.28);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.08);
+  min-height: 78px;
+  padding: 0 36px;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(8, 10, 18, 0.96) 0%, rgba(13, 18, 34, 0.92) 100%);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 .navbar.scrolled .nav-container {
-  background: rgba(9, 9, 9, 0.84);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
+  background: rgba(8, 10, 18, 0.98);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
 }
 
 .brand-logo {
@@ -116,9 +118,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--color-white);
 }
 
@@ -235,7 +237,7 @@
   .nav-links-mobile {
     display: block;
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 8px);
     left: 0;
     right: 0;
     opacity: 0;
@@ -254,8 +256,8 @@
     display: grid;
     gap: 4px;
     padding: 20px;
-    border-radius: 28px;
-    background: rgba(10, 10, 10, 0.96);
+    border-radius: 18px;
+    background: rgba(10, 10, 10, 0.98);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 22px 40px rgba(0, 0, 0, 0.24);
   }
@@ -297,13 +299,13 @@
 
 @media (max-width: 640px) {
   .navbar {
-    padding: 12px 0;
+    padding: 0;
   }
 
   .nav-container {
     min-height: 64px;
-    padding: 0 14px;
-    border-radius: 24px;
+    padding: 0 18px;
+    border-radius: 0;
   }
 
   .brand-logo {

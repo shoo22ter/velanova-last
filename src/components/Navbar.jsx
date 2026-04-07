@@ -62,7 +62,7 @@ const Navbar = () => {
 
   return (
     <header className={`navbar ${isSolid ? 'scrolled' : ''}`}>
-      <div className="container nav-shell">
+      <div className="nav-shell">
         <div className="nav-container">
           <Link to="/" className="brand-logo" aria-label="Velanova home">
             VELANOVA
