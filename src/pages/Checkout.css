@@ -209,6 +209,8 @@
   width: 64px;
   height: 80px;
   border-radius: 14px;
+  object-fit: contain;
+  background: #fff;
 }
 
 .checkout-summary-item strong,
