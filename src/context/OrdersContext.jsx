@@ -37,6 +37,9 @@ export const OrdersProvider = ({ children }) => {
   const addOrder = async (orderData) => {
     if (!token) throw new Error('You must be logged in to place an order.');
     const data = await orderApi.create(token, orderData);
+    if (!data?.order) {
+      throw new Error('Order could not be created. Please check the server response.');
+    }
     const order = data.order;
     setOrders((prev) => [order, ...prev]);
     return order;
@@ -45,6 +48,9 @@ export const OrdersProvider = ({ children }) => {
   const updateOrderStatus = async (orderId, newStatus) => {
     if (!token) throw new Error('You must be logged in as admin to update orders.');
     const data = await orderApi.updateStatus(token, orderId, newStatus);
+    if (!data?.order) {
+      throw new Error('Order status update failed. Please try again.');
+    }
     const nextOrder = data.order;
     setOrders((prev) => prev.map((order) => (order.id === orderId ? nextOrder : order)));
     return nextOrder;

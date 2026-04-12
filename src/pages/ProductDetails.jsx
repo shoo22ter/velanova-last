@@ -8,10 +8,13 @@ import './ProductDetails.css';
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const { products } = useProducts();
+  const { products, loading, error } = useProducts();
   const { addToCart } = useCart();
 
-  const product = useMemo(() => products.find((item) => item.id === id), [products, id]);
+  const product = useMemo(() => {
+    const normalizedId = String(id);
+    return products.find((item) => String(item.id) === normalizedId);
+  }, [products, id]);
   const productSizes = Array.isArray(product?.sizes) ? product.sizes : [];
   const hasSizes = productSizes.length > 0;
 
@@ -28,6 +31,37 @@ const ProductDetails = () => {
     setSelectedSize(firstAvailableSize);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id, firstAvailableSize]);
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="product-details-page">
+          <div className="container details-shell">
+            <div className="details-stage details-not-found">
+              <h2>Loading product...</h2>
+              <p>Please wait while we fetch the product details.</p>
+            </div>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageTransition>
+        <div className="product-details-page">
+          <div className="container details-shell">
+            <div className="details-stage details-not-found">
+              <h2>Could not load product</h2>
+              <p>{error}</p>
+              <Link to="/shop" className="btn btn-primary">Back to Shop</Link>
+            </div>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   if (!product) {
     return (
