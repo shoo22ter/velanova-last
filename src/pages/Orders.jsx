@@ -137,6 +137,13 @@ const Orders = () => {
                 </ScrollReveal>
 
                 <ScrollReveal>
+                  {sortedOrders.length === 0 ? (
+                    <div className="empty-state">
+                      <ShoppingCart size={48} style={{ marginBottom: '16px', opacity: 0.25 }} />
+                      <h2>No orders found</h2>
+                      <p>No orders match the selected status filter. Try selecting a different status.</p>
+                    </div>
+                  ) : (
                   <div className="orders-list">
                     {sortedOrders.map((order, index) => (
                       <motion.div
@@ -261,6 +268,7 @@ const Orders = () => {
                       </motion.div>
                     ))}
                   </div>
+                  )}
                 </ScrollReveal>
               </>
             )}

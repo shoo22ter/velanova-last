@@ -192,6 +192,19 @@ function format_settings(array $row): array
     ];
 }
 
+function format_cart_item(array $row): array
+{
+    return [
+        'cartKey'      => $row['cart_key'],
+        'id'           => (int)   $row['product_id'],
+        'name'         => $row['product_name'],
+        'image'        => $row['product_image'] ?? '',
+        'price'        => (float) $row['price'],
+        'quantity'     => (int)   $row['quantity'],
+        'selectedSize' => $row['selected_size'] ?: null,
+    ];
+}
+
 function format_order(array $order, array $items): array
 {
     return [

@@ -59,6 +59,15 @@ export const orderApi = {
   remove: (token, id) => apiRequest('/orders/delete.php', { method: 'POST', token, body: { id } }),
 };
 
+export const cartApi = {
+  list:   (token)                    => apiRequest('/cart/index.php',  { token }),
+  add:    (token, payload)           => apiRequest('/cart/add.php',    { method: 'POST', token, body: payload }),
+  update: (token, cartKey, quantity) => apiRequest('/cart/update.php', { method: 'POST', token, body: { cartKey, quantity } }),
+  remove: (token, cartKey)           => apiRequest('/cart/remove.php', { method: 'POST', token, body: { cartKey } }),
+  clear:  (token)                    => apiRequest('/cart/clear.php',  { method: 'POST', token }),
+  sync:   (token, items)             => apiRequest('/cart/sync.php',   { method: 'POST', token, body: { items } }),
+};
+
 export const bannerApi = {
   list: () => apiRequest('/banners/index.php'),
   create: (token, payload) => apiRequest('/banners/create.php', { method: 'POST', token, body: payload }),
