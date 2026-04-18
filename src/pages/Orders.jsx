@@ -16,7 +16,7 @@ const Orders = () => {
 
   const filteredOrders = filterStatus === 'all'
     ? orders
-    : orders.filter((order) => order.status === filterStatus);
+    : orders.filter((order) => order.status?.toLowerCase() === filterStatus.toLowerCase());
 
   const sortedOrders = [...filteredOrders].sort((a, b) => {
     switch (sortBy) {
@@ -47,7 +47,7 @@ const Orders = () => {
     link.click();
   };
 
-  const statusClass = (status) => `status-badge status-${status.toLowerCase()}`;
+  const statusClass = (status) => `status-badge status-${(status || '').toLowerCase()}`;
 
   const handleStatusChange = async (orderId, status) => {
     try {
