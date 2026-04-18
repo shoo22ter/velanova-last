@@ -10,7 +10,7 @@ function db(): PDO
     $host = getenv('DB_HOST') ?: 'localhost';
     $name = getenv('DB_NAME') ?: 'velanova_db';
     $user = getenv('DB_USER') ?: 'root';
-    $pass = getenv('DB_PASS') ?: 'P@ssw0rd';
+    $pass = getenv('DB_PASS') ?: '';
     $port = getenv('DB_PORT') ?: '3306';
 
     $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
