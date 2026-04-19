@@ -69,8 +69,8 @@ export const OrdersProvider = ({ children }) => {
   const getOrderStats = () => {
     const totalOrders = orders.length;
     const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-    const pendingOrders = orders.filter((order) => order.status === 'Pending').length;
-    const completedOrders = orders.filter((order) => order.status === 'Delivered').length;
+    const pendingOrders = orders.filter((order) => order.status?.toLowerCase() === 'pending').length;
+    const completedOrders = orders.filter((order) => order.status?.toLowerCase() === 'delivered').length;
 
     return {
       totalOrders,

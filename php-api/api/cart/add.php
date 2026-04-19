@@ -13,7 +13,7 @@ $image       = isset($input['image'])       ? trim((string) $input['image'])    
 $price       = isset($input['price'])       ? (float)  $input['price']              : 0;
 $quantity    = isset($input['quantity'])    ? (int)    $input['quantity']            : 1;
 $selectedSize = isset($input['selectedSize']) ? trim((string) $input['selectedSize']) : null;
-$cartKey     = isset($input['cartKey'])     ? trim((string) $input['cartKey'])       : '';
+$cartKey     = isset($input['cartKey'])     ? substr(trim((string) $input['cartKey']), 0, 191)       : '';
 
 if ($productId <= 0 || $name === '' || $price <= 0 || $quantity <= 0 || $cartKey === '') {
     json_response(['error' => 'Invalid cart item data.'], 422);
