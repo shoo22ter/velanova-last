@@ -47,11 +47,20 @@ const Orders = () => {
     link.click();
   };
 
-  const statusClass = (status) => `status-badge status-${(status || '').toLowerCase()}`;
+  const STATUS_OPTIONS = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+
+  const normalizeStatus = (status) => {
+    const raw = String(status || '').trim().toLowerCase();
+    const match = STATUS_OPTIONS.find((option) => option.toLowerCase() === raw);
+    return match || 'Pending';
+  };
+
+  const statusClass = (status) => `status-badge status-${normalizeStatus(status).toLowerCase()}`;
 
   const handleStatusChange = async (orderId, status) => {
+    const normalizedStatus = normalizeStatus(status);
     try {
-      await updateOrderStatus(orderId, status);
+      await updateOrderStatus(orderId, normalizedStatus);
       setStatusError('');
     } catch (err) {
       setStatusError(err?.message || 'Could not update order status.');
@@ -176,7 +185,7 @@ const Orders = () => {
                           <div className="order-item-total">${order.total.toFixed(2)}</div>
 
                           <div className={statusClass(order.status)}>
-                            {order.status}
+                            {normalizeStatus(order.status)}
                           </div>
 
                           <div className="order-item-expand">
@@ -244,9 +253,9 @@ const Orders = () => {
                               <div className="detail-section">
                                 <h4>Update status</h4>
                                 <select
-                                  value={order.status}
+                                  value={normalizeStatus(order.status)}
                                   onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                                  className="status-select"
+                                  className={`status-select status-select--${normalizeStatus(order.status).toLowerCase()}`}
                                 >
                                   <option value="Pending">Pending</option>
                                   <option value="Processing">Processing</option>

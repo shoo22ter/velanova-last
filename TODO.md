@@ -1,0 +1,3 @@
+- [x] Add status normalization + robust status update/display logic in `src/pages/Orders.jsx`
+- [x] Improve status badge/select styling and add status-variant select classes in `src/pages/Orders.css`
+- [ ] Run focused verification for Orders status-change flow and summarize test status

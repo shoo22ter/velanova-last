@@ -143,11 +143,16 @@
 
 .status-badge {
   justify-self: end;
+  min-width: 112px;
   padding: 10px 14px;
   border-radius: 999px;
+  border: 1px solid transparent;
   font-size: 0.8rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
   text-align: center;
+  text-transform: capitalize;
 }
 
 .status-pending { background: rgba(255, 152, 0, 0.12); color: #ba7000; }
@@ -253,8 +258,41 @@
   border: 1px solid var(--color-border);
   border-radius: 18px;
   font-size: 0.95rem;
+  font-weight: 600;
   background: white;
+  color: var(--color-text);
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-select--pending {
+  background: rgba(255, 152, 0, 0.08);
+  border-color: rgba(255, 152, 0, 0.35);
+  color: #945900;
+}
+
+.status-select--processing {
+  background: rgba(33, 150, 243, 0.08);
+  border-color: rgba(33, 150, 243, 0.35);
+  color: #165aa1;
+}
+
+.status-select--shipped {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: rgba(76, 175, 80, 0.35);
+  color: #2c6b2c;
+}
+
+.status-select--delivered {
+  background: rgba(42, 118, 53, 0.1);
+  border-color: rgba(42, 118, 53, 0.35);
+  color: #245d2d;
+}
+
+.status-select--cancelled {
+  background: rgba(244, 67, 54, 0.08);
+  border-color: rgba(244, 67, 54, 0.35);
+  color: #a82c2c;
 }
 
 .btn-download {
